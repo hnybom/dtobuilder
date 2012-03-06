@@ -80,18 +80,18 @@ public class DtoDismantler<T, DT> {
 	private void dismantleFromProperties(final T source, final DT target)
 			throws DtoConfigurationException {
 		for (final Method m : dtoPropertyClasses.keySet()) {
-			final DtoProperty p = dtoPropertyClasses.get(m);
+			final DtoProperty dtoProperty = dtoPropertyClasses.get(m);
 			
-			if(!target.getClass().equals(p.sourceClass())) {
+			if(!target.getClass().equals(dtoProperty.sourceClass())) {
 				continue;
 			}
 			
-			if ("".equals(p.sourceProperty())) {
+			if (!DtoUtil.isPropertyNameGiven(dtoProperty)) {
 				insertProperties(m, source, target);
 			} else {
 				try {
 					final Object result = m.invoke(source);
-					target.getClass().getMethod("set" + DtoUtil.capitalize(p.sourceProperty()), 
+					target.getClass().getMethod("set" + DtoUtil.capitalize(dtoProperty.sourceProperty()), 
 							result.getClass()).invoke(target, result);
 				} catch (NoSuchMethodException e) {
 

@@ -52,6 +52,7 @@ public class BasicTest {
 			
 		} catch (DtoConfigurationException e) {
 			Assert.assertTrue(false);
+            e.printStackTrace();
 		}
 		
 		

@@ -62,8 +62,8 @@ public class DtoBuilder<T> {
 	private void buildFromPropertyAnnotations(final T target,
 			Map<String, Object> sourceMap) throws DtoConfigurationException {
 		for (final Method m : dtoPropertyClasses.keySet()) {
-			final DtoProperty p = dtoPropertyClasses.get(m);
-			final Object source = sourceMap.get(p.sourceClass()
+			final DtoProperty dtoPropertyAnnotation = dtoPropertyClasses.get(m);
+			final Object source = sourceMap.get(dtoPropertyAnnotation.sourceClass()
 					.getCanonicalName());
 
 			if (source == null) {
@@ -71,12 +71,12 @@ public class DtoBuilder<T> {
 			}
 
 			try {
-				if ("".equals(p.sourceProperty())) {
+				if (!DtoUtil.isPropertyNameGiven(dtoPropertyAnnotation)) {
 					final Object result = source.getClass().getMethod(m.getName()).invoke(source);
 					this.type.getMethod(DtoUtil.getPropertySetterName(m), result.getClass()).invoke(target, result);
 				}
 				else {
-					final Object result = source.getClass().getMethod("get" + DtoUtil.capitalize(p.sourceProperty())).invoke(source);
+					final Object result = source.getClass().getMethod("get" + DtoUtil.capitalize(dtoPropertyAnnotation.sourceProperty())).invoke(source);
 					this.type.getMethod(DtoUtil.getPropertySetterName(m), result.getClass()).invoke(target, result);
 				}
 			} catch (Exception e) {
@@ -98,15 +98,15 @@ public class DtoBuilder<T> {
 			if (source == null) {
 				continue;
 			}
-			for (final Method m : setters) {
+			for (final Method setterMethod : setters) {
 				// Property annotation takes presedence
-				if(m.isAnnotationPresent(DtoProperty.class)) {
+				if(setterMethod.isAnnotationPresent(DtoProperty.class)) {
 					continue;
 				}
 				try {
 					final Method getter = source.getClass().getMethod(
-							DtoUtil.getPropertyGetterName(m), new Class<?>[] {});
-					m.invoke(target, getter.invoke(source));
+							DtoUtil.getPropertyGetterName(setterMethod), new Class<?>[] {});
+					setterMethod.invoke(target, getter.invoke(source));
 				} catch (NoSuchMethodException e) {
 					// ignore
 				} catch (Exception e) {
