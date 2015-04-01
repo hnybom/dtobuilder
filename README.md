@@ -5,36 +5,36 @@ DtoBuilder is annotation based java library for filling DTO objects from e.g. do
 
 Usage is quite simple just annotate your DTO java bean with DtoProperty or DtoClass annotations. The annotations are used to mark from which classes the DTO should be filled from e.g.
 
-{{{
+{code}
 @DtoProperty(sourceClass=Person.class)
 public String getName() {
 	return name;
 }
-}}}
+{code}
 
 this means that the name property should be fetched from Person java bean. By default the builder uses the same property name for the source but it can also be defined like this
 
-{{{
+{code}
 @DtoProperty(sourceClass=Person.class, sourceProperty="bday")
 public Date getBirthday() {
 	return birthday;
 }
-}}}
+{code}
 
 so here the value is fetched from a property named bday.
 
 If you have multiple properties and they all are named the same way in the source and in the dto  you can also annotate the whole dto class
 
-{{{
+{code}
 @DtoClass(sourceClasses={Person.class})
 public class PersonClassDto
-}}}
+{code}
 
 this will fill all the properties in the dto with their counter parts from the Person class. You can also specify multiple classes from where to copy the properties. If the source classes have properties which are named the same way the latter class in the annotation always takes precedence. 
 
 Using the actual builder is quite simple just create a new builder for the dto and call build-method with the source objects like this
 
-{{{
+{code}
 final DtoBuilder<PersonDto> personDtoBuilder = 
 			new DtoBuilder<PersonDto>(PersonDto.class);
 final Person p = new Person();
@@ -43,15 +43,15 @@ p.setAddress("Test street1");
 p.setBday(now);
 p.setName("Test Name");
 final PersonDto pd = personDtoBuilder.build(p);
-}}}
+{code}
 
 You can also dismantle the dto using the dismatler like this:
 
-{{{
+{code}
 final DtoDismantler<PersonDto, Person> personDtoDismantler = 
 			new DtoDismantler<PersonDto, Person>(PersonDto.class, Person.class);
 final Person p2 = personDtoDismantler.dismantle(pd);
-}}}
+{code}
 
 
 And now you get the source class with the same property values as the dto.
